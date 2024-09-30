@@ -1,0 +1,27 @@
+CREATE TABLE movie (
+    movieid VARCHAR(10) PRIMARY KEY,
+    title VARCHAR(255),
+    genre VARCHAR(255),
+    movieyear int,
+    description VARCHAR(255)
+);
+
+CREATE TABLE actor (
+    actorid VARCHAR(10) PRIMARY KEY,
+    firstname VARCHAR(255),
+    lastname VARCHAR(255),
+    dateofbirth int,
+    picture BLOB
+);
+
+CREATE TABLE movie_actor (
+    movieid VARCHAR(10),
+    actorid VARCHAR(10) 
+);
+
+
+SQL CREATE TABLE SEQUENCE (SEQ_NAME VARCHAR(50) NOT NULL, SEQ_COUNT DECIMAL(15), PRIMARY KEY (SEQ_NAME))
+
+CREATE SEQUENCE movie_sequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE actor_sequence START WITH 1 INCREMENT BY 1;
+

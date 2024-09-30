@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             version="2.1">
+
+    <persistence-unit name="moviePU" transaction-type="JTA">
+        <jta-data-source>jdbc/h2DS</jta-data-source>
+        <class>si.cornholio.movieInfo.Movie</class>
+        <class>si.cornholio.movieInfo.Actor</class>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+			<property name="javax.persistence.jdbc.user" value="sa" />	
+			<property name="javax.persistence.jdbc.password" value="" />          
+			<!-- <property name="javax.persistence.jdbc.driver" value="org.h2.jdbcx.JdbcDataSource"/> -->  
+        </properties>
+    </persistence-unit>    
+
+</persistence>
+

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  glassfish:
+    build: .
+    container_name: glassfish-app
+    ports:
+      - "8080:8080"   
+      - "4848:4848"   
+    depends_on:
+      - h2db
+    environment:
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin
+    networks:
+      - app-network
+
+  h2db:
+    image: oscarfonts/h2:latest
+    container_name: h2-database
+    ports:
+      - "9092:9092"   
+      - "8082:8082"   
+    environment:
+      - H2_OPTIONS=-tcp -tcpAllowOthers -webAllowOthers -ifNotExists
+    networks:
+      - app-network
+    volumes:
+      - h2data:~/h2-data
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  h2data:
+    driver: local
+
