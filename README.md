@@ -1,16 +1,20 @@
 # Movie Actor API
 
-This project is a sample Java REST API for managing movie and actor records. It exposes JSON endpoints under `/api` and stores data using JPA/Hibernate, with H2 configured for local development and testing. The application is built as a Java EE-style WAR and can be deployed to a servlet container such as GlassFish or run through the provided Docker setup.
+A Java-based REST API for managing movies and actors, built with JAX-RS, Hibernate, and a GlassFish deployment model. The project demonstrates a simple CRUD-style service with relationships between movies and actors, pagination metadata, caching, and Docker-based local deployment.
+
+## Overview
+
+This application exposes a JSON API under `/api` for creating and querying movie and actor records. It is designed as a lightweight example project for working with Java EE/JAX-RS services, ORM persistence, and servlet deployment.
 
 ## Features
 
-- Create, read, update, and delete movie records
-- Create, read, update, and delete actor records
-- Link actors to movies and remove those relationships
-- Paginated listing endpoints with metadata headers
-- ETag-based caching for GET responses
-- Actor picture retrieval via image endpoint
-- Test-data insertion endpoints for demo data
+- CRUD operations for movies and actors
+- Relationship management between movies and actors
+- Pagination support with response headers
+- ETag-based caching for read operations
+- Actor image retrieval
+- H2 local database support
+- Docker Compose setup for quick local deployment
 
 ## Tech Stack
 
@@ -18,26 +22,26 @@ This project is a sample Java REST API for managing movie and actor records. It 
 - Maven
 - JAX-RS / Jersey
 - Hibernate ORM
-- H2 database
-- GlassFish 5 (Docker deployment target)
-- Docker Compose
+- H2 Database
+- GlassFish 5
+- Docker / Docker Compose
 
 ## Project Structure
 
 ```text
 .
 ├── database/
-│   ├── db.txt                 # SQL schema for movies, actors, and sequences
-│   └── moviedb/               # database-related assets
+│   ├── db.txt
+│   └── moviedb/
 ├── docker/
-│   ├── Dockerfile             # GlassFish deployment image setup
-│   └── docker-compose.yml     # container orchestration for GlassFish + H2
+│   ├── Dockerfile
+│   └── docker-compose.yml
 ├── src/
 │   ├── main/
 │   │   ├── resources/
 │   │   └── webapp/
 │   │       └── WEB-INF/
-│   │           ├── web.xml    # Jersey servlet registration
+│   │           ├── web.xml
 │   │           └── glassfish-web.xml
 │   └── si/
 │       └── cornholio/
@@ -53,96 +57,79 @@ This project is a sample Java REST API for managing movie and actor records. It 
 │               ├── CustomActorIdGenerator.java
 │               └── ...
 ├── test/
-│   └── ...
 ├── pom.xml
 ├── .gitignore
-└── README.md
+├── README.md
+└── LICENSE (if present in your repo)
 ```
 
-## Application Entry Point
-
-The application registers a Jersey servlet mapped to `/api/*` in `src/main/webapp/WEB-INF/web.xml` and sets the application class in `MovieActorApplication.java`.
-
-```java
-@ApplicationPath("/api")
-public class MovieActorApplication extends Application {
-}
-```
-
-This means all REST endpoints are served under the `/api` path.
-
-## REST API
+## API Endpoints
 
 ### Movies
 
 Base path: `/api/movies`
 
-- `GET /api/movies/list?page=1&size=10`  -> list movies with pagination metadata
-- `GET /api/movies/{id}` -> fetch a movie by ID
-- `POST /api/movies` -> create a movie
-- `PUT /api/movies/{id}` -> update a movie
-- `DELETE /api/movies/{id}` -> delete a movie
-- `POST /api/movies/{movieId}/actors/{actorId}` -> associate an actor with a movie
-- `DELETE /api/movies/{movieId}/actors/{actorId}` -> remove actor from a movie
-- `POST /api/movies/insertTestData` -> insert sample movie data
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/movies/list?page=1&size=10` | List movies with pagination metadata |
+| GET | `/api/movies/{id}` | Fetch a specific movie |
+| POST | `/api/movies` | Create a movie |
+| PUT | `/api/movies/{id}` | Update a movie |
+| DELETE | `/api/movies/{id}` | Delete a movie |
+| POST | `/api/movies/{movieId}/actors/{actorId}` | Add an actor to a movie |
+| DELETE | `/api/movies/{movieId}/actors/{actorId}` | Remove an actor from a movie |
+| POST | `/api/movies/insertTestData` | Insert sample movie data |
 
 ### Actors
 
 Base path: `/api/actors`
 
-- `GET /api/actors?page=1&size=10` -> list actors with pagination metadata
-- `GET /api/actors/{id}` -> fetch an actor by ID
-- `POST /api/actors` -> create an actor
-- `PUT /api/actors/{id}` -> update an actor
-- `DELETE /api/actors/{id}` -> delete an actor
-- `GET /api/actors/{id}/picture` -> fetch actor photo if present
-- `POST /api/actors/insertTestData` -> insert sample actor data
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/actors?page=1&size=10` | List actors with pagination metadata |
+| GET | `/api/actors/{id}` | Fetch a specific actor |
+| POST | `/api/actors` | Create an actor |
+| PUT | `/api/actors/{id}` | Update an actor |
+| DELETE | `/api/actors/{id}` | Delete an actor |
+| GET | `/api/actors/{id}/picture` | Fetch an actor picture |
+| POST | `/api/actors/insertTestData` | Insert sample actor data |
 
 ## Data Model
 
-The application uses two main entities:
+The application uses the following core entities:
 
 - `Movie`
-  - id
-  - title
-  - genre
-  - movieYear
-  - description
-  - actors relationship
+  - `movieId`
+  - `title`
+  - `genre`
+  - `movieYear`
+  - `description`
+  - assigned actors
 
 - `Actor`
-  - id
-  - firstName
-  - lastName
-  - dateOfBirth
-  - picture (binary/blob)
+  - `actorId`
+  - `firstName`
+  - `lastName`
+  - `dateOfBirth`
+  - `picture`
 
-The schema in `database/db.txt` defines tables for:
+Database definitions for `movie`, `actor`, and `movie_actor` are stored in `database/db.txt`.
 
-- `movie`
-- `actor`
-- `movie_actor`
-- sequences for generating IDs
-
-## Build and Run
+## Getting Started
 
 ### Prerequisites
 
 - Java 8+
 - Maven
-- Docker + Docker Compose (optional, for containerized run)
+- Docker and Docker Compose (optional for containerized run)
 
-### Run locally with Maven
-
-From the project root:
+### Build the Project
 
 ```bash
 mvn clean package
 ```
 
-Then deploy the generated WAR to a servlet container such as GlassFish or Tomcat.
-
-You can also run the app in a local Java EE container if your environment is configured for it.
+This generates a WAR artifact suitable for deployment to a servlet container.
 
 ### Run with Docker Compose
 
@@ -151,22 +138,22 @@ cd docker
 docker-compose up --build
 ```
 
-This starts:
+This starts the GlassFish application container and an H2 database container.
 
-- GlassFish app container on `http://localhost:8080`
-- H2 database on ports `9092` and `8082`
+### Local Deployment
 
-The Docker setup expects the WAR file to already be built at:
+After building the project, deploy the WAR file to a Java EE servlet container such as GlassFish or Tomcat.
 
-```text
+```bash
 target/movie-actor-api-1.0-SNAPSHOT.war
 ```
 
-## Example API Calls
+## Example Requests
 
 ```bash
 curl http://localhost:8080/api/movies/list?page=1&size=10
 curl http://localhost:8080/api/actors
+
 curl -X POST http://localhost:8080/api/movies \
   -H "Content-Type: application/json" \
   -d '{"title":"The Matrix","genre":"Sci-Fi","movieYear":1999,"description":"A hacker learns reality is a simulation."}'
@@ -174,10 +161,8 @@ curl -X POST http://localhost:8080/api/movies \
 
 ## Notes
 
-- The project appears to be a learning/demo application rather than a production-ready API.
-- The Docker configuration and POM indicate a WAR deployment flow rather than a standalone Spring Boot app.
-- H2 is included for local testing, but a production-ready deployment would typically use a managed database and externalized configuration.
+This repository is a sample/demo application rather than a production-grade system. It is useful for understanding how a Java JAX-RS service integrates with JPA/Hibernate, binary data handling, and a servlet-based deployment flow.
 
 ## License
 
-No explicit license file was found in the repository. Check the repository settings or project documentation for licensing details before redistributing or using the code in production.
+This project does not currently include a visible license file in the repository. If you plan to distribute or reuse this code, confirm the repository’s licensing terms before doing so.
